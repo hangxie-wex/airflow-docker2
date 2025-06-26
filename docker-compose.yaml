@@ -53,14 +53,12 @@ x-airflow-common:
   # build: .
   environment:
     &airflow-common-env
-    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/execution/'
     # yamllint disable rule:line-length
     # Use simple http server on scheduler for health checks
@@ -73,6 +71,13 @@ x-airflow-common:
     # The following line can be used to set a custom config file, stored in the local config folder
     AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
     AIRFLOW_ENV: local
+    AWS_ACCESS_KEY_ID: test
+    AWS_SECRET_ACCESS_KEY: test
+    AWS_DEFAULT_REGION: us-east-1
+    S3_ENDPOINT_URL: http://localstack:4566
+    SECRETS_MANAGER_ENDPOINT_URL: http://localstack:4566 # Added here
+    # AIRFLOW__SECRETS__BACKEND: airflow.providers.amazon.aws.secrets.secrets_manager.SecretsManagerBackend # Added here
+    # AIRFLOW__SECRETS__BACKEND_KWARGS: '{"connections_prefix": "airflow/connections", "variables_prefix": "airflow/variables"}' # Added here
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
@@ -83,24 +88,54 @@ x-airflow-common:
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
-    redis:
-      condition: service_healthy
     postgres:
       condition: service_healthy
 
 services:
+  sql_server_test:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql_server_test
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: 'WexAdmin1!' # Ensure this password meets SQL Server complexity requirements.
+    ports:
+      - "1433:1433"
+    volumes:
+      # This volume ensures your data persists even if the container is removed.
+      # Change 'mssql_data' to a more specific name if you have multiple SQL instances.
+      - ${AIRFLOW_PROJ_DIR:-.}/mssql-home:/var/opt/mssql
+
   sftp-server:
-    image: atmoz/sftp
+    image: atmoz/sftp:alpine
+    platform: linux/amd64
     container_name: sftp-server # Explicitly name it, matching the hostname you use
     ports:
       - "2222:22" # Mapping to host for external access if needed, but not for internal
-    environment:
-      - SFTP_USERS=foo:pass:::upload # Example user/pass/permissions
+    # environment:
+    #   - SFTP_USERS=foo:pass:::upload # Example user/pass/permissions
     command: foo:pass:::upload # Example for atmoz/sftp to create user
     volumes:
-       - ${AIRFLOW_PROJ_DIR:-.}/sftp-home:/upload
+       - ${AIRFLOW_PROJ_DIR:-.}/sftp-home:/home/foo
     networks: # Crucial: Must be in the same network as Airflow
       - default
+
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566" # Default LocalStack endpoint
+      - "4510-4559:4510-4559" # For other services (optional but good to include)
+    environment:
+      - SERVICES=s3,secretsmanager # Only run S3 for now, you can add more later (e.g., sqs, dynamodb)
+      - DEBUG=1 # Optional: for verbose logging
+      - DOCKER_HOST=unix:///var/run/docker.sock # Required if you're running Docker-in-Docker or need to interact with Docker from LocalStack
+      - LOCALSTACK_DISABLE_TMP_FOLDER=true
+      - LOCALSTACK_TMPDIR=/var/lib/localstack
+    volumes:
+      # - ./localstack_data:/tmp/localstack # Persist data (optional but recommended)
+      - ${AIRFLOW_PROJ_DIR:-.}/localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock # Mount Docker socket for DOCKER_HOST
+    networks:
+      - default # Ensure LocalStack is on the same network as Airflow
 
   postgres:
     image: postgres:13
@@ -109,7 +144,8 @@ services:
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
     volumes:
-      - postgres-db-volume:/var/lib/postgresql/data
+      - ${AIRFLOW_PROJ_DIR:-.}/postgres:/var/lib/postgresql/data
+      # - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
@@ -117,25 +153,11 @@ services:
       start_period: 5s
     restart: always
 
-  redis:
-    # Redis is limited to 7.2-bookworm due to licencing change
-    # https://redis.io/blog/redis-adopts-dual-source-available-licensing/
-    image: redis:7.2-bookworm
-    expose:
-      - 6379
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 30s
-      retries: 50
-      start_period: 30s
-    restart: always
-
   airflow-apiserver:
     <<: *airflow-common
     command: api-server
     ports:
-      - "8080:8080"
+      - "8090:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/version"]
       interval: 30s
@@ -147,6 +169,7 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    build:  .
 
   airflow-scheduler:
     <<: *airflow-common
@@ -162,6 +185,7 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+    build:  .
 
   airflow-dag-processor:
     <<: *airflow-common
@@ -175,33 +199,6 @@ services:
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
-
-  airflow-worker:
-    <<: *airflow-common
-    command: celery worker
-    healthcheck:
-      # yamllint disable rule:line-length
-      test:
-        - "CMD-SHELL"
-        - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    environment:
-      <<: *airflow-common-env
-      # Required to handle warm shutdown of the celery workers properly
-      # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
-      DUMB_INIT_SETSID: "0"
-    restart: always
-    networks:
-      - default
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-apiserver:
-        condition: service_healthy
       airflow-init:
         condition: service_completed_successfully
 
@@ -327,27 +324,5 @@ services:
     depends_on:
       <<: *airflow-common-depends-on
 
-  # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
-  # or by explicitly targeted on the command line e.g. docker-compose up flower.
-  # See: https://docs.docker.com/compose/profiles/
-  flower:
-    <<: *airflow-common
-    command: celery flower
-    profiles:
-      - flower
-    ports:
-      - "5555:5555"
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    restart: always
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
-
-volumes:
-  postgres-db-volume:
+# volumes:
+#   postgres-db-volume: ${AIRFLOW_PROJ_DIR:-.}/postgres

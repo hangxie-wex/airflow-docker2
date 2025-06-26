@@ -1,0 +1,8 @@
+# compiled output
+/localstack_data
+/sftp-home
+/postgres
+/mssql-home
+/logs
+
+

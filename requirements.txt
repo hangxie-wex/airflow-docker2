@@ -1,0 +1,6 @@
+boto3
+paramiko
+apache-airflow-providers-microsoft-mssql===3.7.2
+pyodbc
+apache-airflow-providers-amazon
+
