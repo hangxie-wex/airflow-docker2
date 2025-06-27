@@ -113,9 +113,9 @@ services:
       - "2222:22" # Mapping to host for external access if needed, but not for internal
     # environment:
     #   - SFTP_USERS=foo:pass:::upload # Example user/pass/permissions
-    command: foo:pass:::upload # Example for atmoz/sftp to create user
+    command: sftpuser:password:::upload # Example for atmoz/sftp to create user
     volumes:
-       - ${AIRFLOW_PROJ_DIR:-.}/sftp-home:/home/foo
+       - ${AIRFLOW_PROJ_DIR:-.}/sftp-home:/home/sftpuser
     networks: # Crucial: Must be in the same network as Airflow
       - default
 

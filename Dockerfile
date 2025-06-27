@@ -24,8 +24,10 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
 
 # Switch back to the Airflow user BEFORE installing Python packages
 # This adheres to Airflow's recommended practice for installing dependencies.
-USER airflow
 RUN rm -rf /home/airflow/.local/lib/python3.11/site-packages/airflow/example_dags
+
+USER airflow
+
 # Install the Airflow MSSQL provider and Python ODBC driver (pyodbc)
 COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
