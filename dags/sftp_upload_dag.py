@@ -8,8 +8,8 @@ def upload_task():
     log: logging.log = logging.getLogger("airflow")
     log.setLevel(logging.INFO)
     logging.info("testing")
-    local_file = "/opt/airflow/dags/example_file.txt"
-    remote_file = "example_file.txt"
+    local_file = "/opt/airflow/dags/testfiles/example_file.txt"
+    remote_file = "upload/example_file.txt"
     sftp_upload_file(local_file, remote_file)
 
 with DAG(
