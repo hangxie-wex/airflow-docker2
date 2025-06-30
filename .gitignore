@@ -4,7 +4,6 @@
 /postgres
 /mssql-home
 /logs
-/dags/__pycache__
-/dags/helpers/__pycache__
+__pycache__/
 
 
