@@ -26,6 +26,8 @@ For Macbook, use homebrew to install awslocal and awscli by running the followin
 
 ```docker-compose build --no-cache > build_output.log 2>&1```
 
+If the command failed, remove ```--no-cache ``` and re-run the command.
+
 * Start all the services defined in docker-compose.yaml file:
 
 ```docker compose up -d```
