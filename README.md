@@ -64,7 +64,8 @@ using the password: ```password```
 It also executed the scripts ```./scripts/init-localstack.sh```  and created the following objects:
 
 1. a S3 bucket ```s3://local-airflow-bucket```
-2. Three Secret Manager objects: ```airflow/connections/local_s3_conn```, ```airflow/connections/local_sftp_conn```, and ```airflow/connections/local_sql_conn```
+
+2. Three Secret Manager objects: ```airflow/connections/local_s3_conn``` to connect to local S3, ```airflow/connections/local_sftp_conn``` to connect to local sftp, and ```airflow/connections/local_sql_conn``` to connect to local MS SQL server.
 
 
 ## Local S3 operations 
@@ -85,8 +86,8 @@ It also executed the scripts ```./scripts/init-localstack.sh```  and created the
 
 ## Airflow connection setup 
 
-Login to ```http://127.0.0.1:8090``` and  click Admin then connections. The follwoing connections should be added.
-
+This section is optional. It is not needed if we use AWS Secret Manager to manager the crendentials.
+ Login to ```http://127.0.0.1:8090``` and  click Admin then connections. The follwoing connections should be added. 
 * MS SQL Server Connection:
 
 ```Connection ID: mssql_conn```
