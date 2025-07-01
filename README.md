@@ -134,3 +134,10 @@ and then rerun the following command to build images for services:
 * If sftp command got rejected, run the following commands to clear the local key and force to regenerate the key in the next request and then run sfto command
 
 ```ssh-keygen -R "[127.0.0.1]:2222"```
+
+## Troubleshooting
+* Check the DAG list. Find the container id of appserver and run the following command: 
+
+```docker exec -it 1a88d73406a6 airflow dags list-import-errors```
+
+```docker exec -it 71ed1ffcd163 airflow dags list```
