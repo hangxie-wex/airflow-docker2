@@ -143,8 +143,14 @@ and then rerun the following command to build images for services:
 ```ssh-keygen -R "[127.0.0.1]:2222"```
 
 ## Troubleshooting
-* Check the DAG list. Find the container id of appserver and run the following command: 
+* Check the DAG list or the import errors. Find the container id of appserver and run the following command: 
 
 ```docker exec -it 1a88d73406a6 airflow dags list-import-errors```
 
 ```docker exec -it 71ed1ffcd163 airflow dags list```
+
+* Check if the packege is properly installed. Fine the container if of appserver or schedule and run the following commnds:
+
+```docker exec -it 627f56d9d5bd bash```
+
+```pip freeze | grep apache-airflow-providers-microsoft-mssql```
