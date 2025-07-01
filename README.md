@@ -149,7 +149,7 @@ and then rerun the following command to build images for services:
 
 ```docker exec -it 71ed1ffcd163 airflow dags list```
 
-* Check if the packege is properly installed. Fine the container if of appserver or schedule and run the following commnds:
+* Check if the packege is properly installed. Find the container if of appserver or schedule and run the following commnds:
 
 ```docker exec -it 627f56d9d5bd bash```
 
