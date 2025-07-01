@@ -61,6 +61,12 @@ using the password: ```password```
 
 * A local aws service(LocalStack). 
 
+It also executed the scripts ```./scripts/init-localstack.sh```  and created the following objects:
+
+1. a S3 bucket ```s3://local-airflow-bucket```
+2. Three Secret Manager objects: ```airflow/connections/local_s3_conn```, ```airflow/connections/local_sftp_conn```, and ```airflow/connections/local_sql_conn```
+
+
 ## Local S3 operations 
 
 * Create a bucket in LocalStack:
