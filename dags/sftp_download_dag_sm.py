@@ -7,9 +7,9 @@ import paramiko
 import json
 
 def get_sftp_credentials_sm():
-    secret_name = "airflow/connections/local_sftp_conn" # Use the full secret name as registered in Secrets Manager
+    secret_name = "local/RiskPlatform/expedia-sftp-conn" # Use the full secret name as registered in Secrets Manager
     region_name = "us-east-1"
-    # Change 'airflow/connections' to 'secretsmanager'
+    # Change 'local/RiskPlatform' to 'secretsmanager'
     client = boto3.client("secretsmanager", region_name=region_name, endpoint_url="http://localstack:4566")
     response = client.get_secret_value(SecretId=secret_name)
     return json.loads(response["SecretString"])

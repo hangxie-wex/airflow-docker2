@@ -9,7 +9,7 @@ from datetime import datetime
 
 def debug_connection():
     try:
-        conn = BaseHook.get_connection("local_sql_conn")
+        conn = BaseHook.get_connection("srsvc_db_conn")
         print(f"Retrieved connection ID: {conn.conn_id}")
         print(f"Retrieved connection type: {conn.conn_type}") # This should be 'mssql'
         print(f"Retrieved connection host: {conn.host}")
@@ -51,7 +51,7 @@ with DAG(
     debug_sql_connection_task = PythonOperator(
         task_id='debug_sql_connection2',
         python_callable=test_mssql_connection,
-        op_kwargs={'conn_id': 'local_sql_conn'}, # The ID you successfully retrieved
+        op_kwargs={'conn_id': 'srsvc_db_conn'}, # The ID you successfully retrieved
     )
 
     debug_task >> debug_sql_connection_task

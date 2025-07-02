@@ -63,9 +63,9 @@ using the password: ```password```
 
 It also executed the scripts ```./scripts/init-localstack.sh```  and created the following objects:
 
-1. a S3 bucket ```s3://local-airflow-bucket```
+1. a S3 bucket ```s3://expedia-recon```
 
-2. Three Secret Manager objects: ```airflow/connections/local_s3_conn``` to connect to local S3, ```airflow/connections/local_sftp_conn``` to connect to local sftp, and ```airflow/connections/local_sql_conn``` to connect to local MS SQL server.
+2. Three Secret Manager objects: ```local/RiskPlatform/expedia_s3_conn``` to connect to local S3, ```local/RiskPlatform/expedia-sftp-conn``` to connect to local sftp, and ```local/RiskPlatform/srsvc_db_conn``` to connect to local MS SQL server.
 
 
 ## Local S3 operations 

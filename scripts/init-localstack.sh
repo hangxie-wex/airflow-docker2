@@ -4,18 +4,18 @@ set -euo pipefail
 echo "--- Initializing LocalStack resources ---"
 
 # 1. Create S3 Bucket
-echo "Creating S3 bucket: local-airflow-bucket"
-awslocal s3 mb s3://local-airflow-bucket
+echo "Creating S3 bucket: expedia-recon"
+awslocal s3 mb s3://expedia-recon
 
 # 2. Create Secrets Manager Secrets for  Connections
-SECRET_NAME_S3="airflow/connections/local_s3_conn" # Matches Airflow's connection_prefix and conn_id
+SECRET_NAME_S3="local/RiskPlatform/expedia_s3_conn" # Matches Airflow's connection_prefix and conn_id
 SECRET_STRING_S3='{"conn_type": "aws", "extra": {"endpoint_url": "http://localstack:4566", "verify": false}, "aws_access_key_id": "test", "aws_secret_access_key": "test"}' # LocalStack doesn't validate
 
-SECRET_NAME_SFTP="airflow/connections/local_sftp_conn" 
+SECRET_NAME_SFTP="local/RiskPlatform/expedia-sftp-conn" 
 SECRET_STRING_SFTP='{"username": "sftpuser",  "password": "password", "hostname": "sftp-server", "port": 22}'
 
-SECRET_NAME_SQL="airflow/connections/local_sql_conn" 
-SECRET_STRING_SQL='{"conn_id": "local_sql_conn", "conn_type": "mssql", "host": "sql_server_test", "port": "1433", "login": "sa", "password": "WexAdmin1!", "schema": "master"}'
+SECRET_NAME_SQL="local/RiskPlatform/srsvc_db_conn" 
+SECRET_STRING_SQL='{"conn_id": "srsvc_db_conn", "conn_type": "mssql", "host": "sql_server_test", "port": "1433", "login": "sa", "password": "WexAdmin1!", "schema": "master"}'
 
 
 REGION="us-east-1" # Must match region in backend_kwargs

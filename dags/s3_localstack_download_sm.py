@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 def download_file_from_s3(bucket_name, key, local_path):
-    s3_hook = S3Hook(aws_conn_id='local_s3_conn')
+    s3_hook = S3Hook(aws_conn_id='expedia_s3_conn')
     client = s3_hook.get_conn() # Or whatever your AWS connection ID is
     client.download_file(Key=key, Bucket=bucket_name, Filename=local_path)
     print(f"File {key} downloaded from s3://{bucket_name} to {local_path}")
@@ -22,7 +22,7 @@ with DAG(
         task_id='download_from_local_s3',
         python_callable=download_file_from_s3,
         op_kwargs={
-            'bucket_name': 'local-airflow-bucket',
+            'bucket_name': 'expedia-recon',
             'key': 'test_file.txt',
             'local_path': '/opt/airflow/dags/downloaded_file.txt' # Path accessible inside your Airflow container
         },

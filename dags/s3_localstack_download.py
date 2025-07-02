@@ -21,7 +21,7 @@ with DAG(
         task_id='download_from_local_s3',
         python_callable=download_file_from_s3,
         op_kwargs={
-            'bucket_name': 'my-test-bucket',
+            'bucket_name': 'expedia-recon',
             'key': 'test_file.txt',
             'local_path': '/opt/airflow/dags/downloaded_file.txt' # Path accessible inside your Airflow container
         },
