@@ -53,7 +53,6 @@ x-airflow-common:
   # build: .
   environment:
     &airflow-common-env
-    AIRFLOW_UID: 50000
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
@@ -104,7 +103,7 @@ services:
     volumes:
       # This volume ensures your data persists even if the container is removed.
       # Change 'mssql_data' to a more specific name if you have multiple SQL instances.
-      - ${AIRFLOW_PROJ_DIR:-.}/mssql-home:/var/opt/mssql
+      - ${AIRFLOW_PROJ_DIR:-.}/mssql-home/data:/var/opt/mssql/data
 
   sftp-server:
     image: atmoz/sftp:alpine
@@ -112,8 +111,6 @@ services:
     container_name: sftp-server # Explicitly name it, matching the hostname you use
     ports:
       - "2222:22" # Mapping to host for external access if needed, but not for internal
-    # environment:
-    #   - SFTP_USERS=foo:pass:::upload # Example user/pass/permissions
     command: sftpuser:password:::upload # Example for atmoz/sftp to create user
     volumes:
        - ${AIRFLOW_PROJ_DIR:-.}/sftp-home:/home/sftpuser
