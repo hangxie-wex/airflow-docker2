@@ -22,6 +22,14 @@ For Macbook, use homebrew to install awslocal and awscli by running the followin
 
 ## Bring up local containers 
 
+There are two ways to bring up all the containers. 
+
+
+1. In the project directory, run the following command to build images for services:
+
+```./local-setup.sh```
+
+2. Following the procedure
 * In the project directory, run the following command to build images for services:
 
 ```docker-compose build --no-cache > build_output.log 2>&1```
