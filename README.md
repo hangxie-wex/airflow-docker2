@@ -64,7 +64,7 @@ Password: WexAdmin1!
 ```
 * A sftp server. We can ssh to the sftp server: 
 ```
-sftp -P 2222 sftpuser@127.0.0.1`
+sftp -P 2222 sftpuser@127.0.0.1
 ```
 using the password: `password`
 
@@ -147,7 +147,7 @@ ssh-keygen -R "[127.0.0.1]:2222"
 ## Troubleshooting
 * Check the DAG list or the import errors. Find the container id of appserver and run the following command: 
 ```
-docker exec -it 1a88d73406a6 airflow dags list-import-error
+docker exec -it 1a88d73406a6 airflow dags list-import-errors
 docker exec -it 71ed1ffcd163 airflow dags list
 ```
 * Check if the packege is properly installed. Find the container if of appserver or schedule and run the following commnds:
