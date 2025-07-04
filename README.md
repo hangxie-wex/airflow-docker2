@@ -81,17 +81,17 @@ It also executed the scripts `./scripts/init-localstack.sh`  and created the fol
 
 * Create a bucket in LocalStack:
 
-`awslocal s3 mb s3://my-test-bucket`
+`awslocal s3 mb s3://expedia-recon`
 
 * Upload a test file to your local S3 bucket:
 
 `echo "Hello from LocalStack S3!" > test_file.txt`
 
-`awslocal s3 cp test_file.txt s3://my-test-bucket/test_file.txt`
+`awslocal s3 cp test_file.txt s3://expedia-recon/test_file.txt`
 
 * Verify the file is in your local S3 bucket:
 
-`awslocal s3 ls s3://my-test-bucket/`
+`awslocal s3 ls s3://expedia-recon/`
 
 ## Airflow connection setup 
 
@@ -142,6 +142,12 @@ docker restart <containerId>
 * If sftp command got rejected, run the following commands to clear the local key and force to regenerate the key in the next request and then run sfto command
 ```
 ssh-keygen -R "[127.0.0.1]:2222"
+```
+
+* If webserver and scheduler cannot be up complaining DB already initialized, remove the folder postgres in project directory to force the airflow to reinitialize the DB
+
+```
+rm -rf postgres
 ```
 
 ## Troubleshooting
