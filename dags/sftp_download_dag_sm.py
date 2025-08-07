@@ -5,7 +5,7 @@ import boto3
 import paramiko
 import json
 
-from airflow.providers.standard.operators.python import PythonOperator
+from airflow.operators.python import PythonOperator
 
 def get_sftp_credentials_sm():
     secret_name = "local/RiskPlatform/expedia-sftp-conn" # Use the full secret name as registered in Secrets Manager

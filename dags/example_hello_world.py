@@ -5,7 +5,7 @@ and hello_world_2 we then trigger 1 and then 2"""
 from airflow import DAG
 import datetime
 
-from airflow.providers.standard.operators.bash import BashOperator
+from airflow.operators.bash import BashOperator
 
 with DAG(
     dag_id='hello_world_dag_1',

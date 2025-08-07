@@ -1,7 +1,7 @@
 from airflow import DAG
 from datetime import datetime
 
-from airflow.providers.standard.operators.python import PythonOperator
+from airflow.operators.python import PythonOperator
 
 from helpers.sftp_utils import sftp_download_file
 import logging
