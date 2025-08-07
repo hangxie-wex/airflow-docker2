@@ -5,5 +5,5 @@
 /mssql-home
 /logs
 __pycache__/
-
+.idea/
 

@@ -1,7 +1,10 @@
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+# from airflow.operators.python import PythonOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from datetime import datetime
+
+from airflow.providers.standard.operators.python import PythonOperator
+
 
 def download_file_from_s3(bucket_name, key, local_path):
     s3_hook = S3Hook(aws_conn_id='aws_default', client_type='s3', verify=False)

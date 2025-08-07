@@ -1,11 +1,9 @@
 from airflow import DAG
-from airflow.providers.microsoft.mssql.operators.mssql import MsSqlOperator
 from airflow.hooks.base import BaseHook
-from airflow.operators.python import PythonOperator
 from airflow.providers.microsoft.mssql.hooks.mssql import MsSqlHook
-
-
 from datetime import datetime
+from airflow.providers.standard.operators.python import PythonOperator
+
 
 def debug_connection():
     try:
