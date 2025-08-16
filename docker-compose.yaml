@@ -105,6 +105,9 @@ services:
       # This volume ensures your data persists even if the container is removed.
       # Change 'mssql_data' to a more specific name if you have multiple SQL instances.
       - ${AIRFLOW_PROJ_DIR:-.}/mssql-home:/var/opt/mssql
+      - ${AIRFLOW_PROJ_DIR:-.}/scripts/init-db.sql:/init.sql
+      - ${AIRFLOW_PROJ_DIR:-.}/scripts/init-db.sh:/init.sh
+    entrypoint: ["/bin/bash", "-c", "/init.sh"]
 
   sftp-server:
     image: atmoz/sftp:alpine
