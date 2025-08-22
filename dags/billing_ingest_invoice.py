@@ -16,9 +16,9 @@ from tasks.get_new_files_set import  get_new_files_set
     start_date=datetime.now() - timedelta(days=1),
     catchup=False,
     default_args={'retries': 1, 'retry_delay': timedelta(minutes=5)},
-    tags=['sftp', 'file_processing']
+    tags=['portfolio', 'expedia-recon']
 )
-def daily_file_dag():
+def billing_ingest_invoice():
     new_files = get_new_files_set()
     transfer_task = transfer_files(new_files)
     decrypt_task = decrypt_files()
@@ -29,10 +29,4 @@ def daily_file_dag():
 
     transfer_task >> decrypt_task >> notify_file_missed_task >> ingest_task >> invoice_task >> trend_task
 
-#     currentFile =transfer_file.expand(file=new_files)
-#     descrypt_file = decrypt_file.expand(file=currentFile)
-#     billing_file = billing_file_ingestion.expand(file=descrypt_file)
-#     invoice_file = invoice_creation.expand(file=billing_file)
-#     trend_output = billing_file_trend.expand(file=invoice_file)
-#     billing_to_recon_load.expand(file=trend_output)
-dag_instance = daily_file_dag()
+dag_instance = billing_ingest_invoice()

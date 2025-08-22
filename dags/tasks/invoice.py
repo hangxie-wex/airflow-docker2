@@ -9,19 +9,18 @@ def find_files_to_invoice()-> Set[str]:
     return files
 
 def create_invoice(file:str):
-    logging.info(f"creating {file} files")
+    logging.info(f"creating the invoice for the {file} file")
 
 def create_pdf_file():
     logging.info(f"moving files")
 
-def sending_email():
+def save_in_network_drive():
     logging.info(f"moving  files")
-
 
 def process_invoice(file:str):
     create_invoice(file)
     create_pdf_file()
-    sending_email()
+    save_in_network_drive()
     logging.info(f"processing {file} files")
 
 @task
